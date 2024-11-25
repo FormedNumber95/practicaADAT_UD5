@@ -6,6 +6,8 @@ public class modeloDeporte {
 
 	private String nombre;
 	
+	public modeloDeporte() {}
+	
 	public modeloDeporte(String nombre) {
 		this.nombre = nombre;
 	}
