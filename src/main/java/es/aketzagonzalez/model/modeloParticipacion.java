@@ -10,6 +10,8 @@ public class modeloParticipacion {
 	private int edad;
 	private String medalla;
 
+	public modeloParticipacion() {}
+	
 	public modeloParticipacion(modeloDeportista deportista, modeloEvento evento, modeloEquipo equipo, int edad,
 			String medalla) {
 		super();

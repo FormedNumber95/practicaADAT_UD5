@@ -7,6 +7,8 @@ public class modeloEquipo {
 	private String nombre;
 	private String iniciales;
 	
+	public modeloEquipo() {}
+	
 	public modeloEquipo(String nombre, String iniciales) {
 		this.nombre = nombre;
 		this.iniciales = iniciales;

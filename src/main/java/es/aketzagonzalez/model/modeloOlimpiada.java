@@ -9,6 +9,8 @@ public class modeloOlimpiada {
 	private String temporada;
 	private String ciudad;
 	
+	public modeloOlimpiada() {}
+	
 	public modeloOlimpiada(String nombre, int anio, String temporada, String ciudad) {
 		super();
 		this.nombre = nombre;

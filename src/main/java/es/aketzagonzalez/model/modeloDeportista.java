@@ -9,6 +9,8 @@ public class modeloDeportista {
 	private float peso;
 	private int altura; //centimetros
 	
+	public modeloDeportista() {}
+	
 	public modeloDeportista(String nombre, char sexo, float peso, int altura) {
 		super();
 		this.nombre = nombre;

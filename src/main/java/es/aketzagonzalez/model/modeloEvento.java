@@ -8,6 +8,8 @@ public class modeloEvento {
 	private modeloOlimpiada olimpiada;
 	private modeloDeporte deporte;
 	
+	public modeloEvento() {}
+	
 	public modeloEvento(int id_evento, String nombre, modeloOlimpiada olimpiada, modeloDeporte deporte) {
 		super();
 		this.nombre = nombre;
