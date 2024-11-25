@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -143,7 +144,6 @@ public class Main {
 		File f=null;
 		try {
 			f = new File(d.getClass().getResource("/csv/athlete_events-sort.csv").toURI());
-			System.out.println(f.exists());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
@@ -168,8 +168,59 @@ public class Main {
 	        	if(resp==1) {
 	        		temporada="Winter";
 	        	}
-	        	for(ModeloOlimpiada o:DaoOlimpiada.conseguirPorTemporada(temporada, db)) {
-	        		System.out.println(o.getNombre());
+	        	List<ModeloOlimpiada> olimpiadas=DaoOlimpiada.conseguirPorTemporada(temporada, db);
+	        	do {
+	        		System.out.println("Elige la edición olímpica:");
+		        	for(int i=0;i<olimpiadas.size();i++) {
+		        		System.out.println((i+1)+" "+olimpiadas.get(i).getNombre());
+		        	}
+		        	resp=input.nextInt();
+		        	input.nextLine();
+	        	}while(resp<1||resp>olimpiadas.size());
+	        	ModeloOlimpiada olimpiada=olimpiadas.get(resp-1);
+	        	List<ModeloEvento> eventos=DaoEvento.conseguirPorOlimpiada(olimpiada, db);
+	        	if(eventos.size()==0) {
+	        		System.out.println("No hay deportes en esa olimpiada");
+	        		break;
+	        	}
+	        	ArrayList<ModeloDeporte> deportesDisponibles=new ArrayList<ModeloDeporte>();
+	        	for(ModeloEvento e:eventos) {
+	        		if(!deportesDisponibles.contains(e.getDeporte())) {
+	        			deportesDisponibles.add(e.getDeporte());
+	        		}
+	        	}
+	        	do {
+	        		System.out.println("Elige el deporte");
+	        		for(int i=0;i<deportesDisponibles.size();i++) {
+	        			System.out.println((i+1)+" "+deportesDisponibles.get(i).getNombre());
+	        		}
+	        		resp=input.nextInt();
+	        		input.nextLine();
+	        	}while(resp<1||resp>deportesDisponibles.size());
+	        	ModeloDeporte deporte=deportesDisponibles.get(resp-1);
+	        	List<ModeloEvento>eventosConFiltro=
+	        			DaoEvento.conseguirPorOlimpiadaDeporte(olimpiada, deporte, db);
+	        	do {
+	        		System.out.println("Elige el evento");
+	        		for(int i=0;i<eventosConFiltro.size();i++) {
+	        			System.out.println((i+1)+" "+eventosConFiltro.get(i).getNombre());
+	        		}
+	        		resp=input.nextInt();
+	        		input.nextLine();
+	        	}while(resp<1||resp>eventosConFiltro.size());
+	        	ModeloEvento evento=eventosConFiltro.get(resp-1);
+	        	List<ModeloParticipacion> participaciones=
+	        			DaoParticipacion.conseguirPorEvento(evento, db);
+	        	ArrayList<ModeloDeportista> deportistas=new ArrayList<ModeloDeportista>();
+	        	for(ModeloParticipacion par:participaciones) {
+	        		if(!deportistas.contains(par.getDeportista())) {
+	        			deportistas.add(par.getDeportista());
+	        		}
+	        	}
+	        	for(int i=0;i<deportistas.size();i++) {
+	        		ModeloDeportista dep=deportistas.get(i);
+	        		System.out.println(dep.getNombre()+" "+dep.getAltura()+" "+
+	        		dep.getPeso());
 	        	}
 	        	break;
 	        case 2:

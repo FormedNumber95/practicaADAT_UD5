@@ -1,7 +1,10 @@
 package es.aketzagonzalez.dao;
 
+import java.util.List;
+
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.db4o.query.Predicate;
 
 import es.aketzagonzalez.model.ModeloDeportista;
 import es.aketzagonzalez.model.ModeloEvento;
@@ -36,6 +39,35 @@ public class DaoParticipacion {
 		par.setEvento(e);
 		ObjectSet<ModeloParticipacion> set=db.queryByExample(par);
 		return set.hasNext() ? set.next() : null;
+	}
+	
+	/**
+	 * Conseguir por evento.
+	 *
+	 * @param e the e
+	 * @param db the db
+	 * @return the list
+	 */
+	public static List<ModeloParticipacion> conseguirPorEvento(ModeloEvento e,ObjectContainer db){
+		List<ModeloParticipacion> participaciones=db.query(new Predicate<ModeloParticipacion>() {
+
+			@Override
+			public boolean match(ModeloParticipacion par) {
+				return par.getEvento().equals(e);
+			}
+		});
+		return participaciones;
+	}
+	
+	public static List<ModeloParticipacion> conseguirPorEventoDeportista(ModeloEvento e,ModeloDeportista d,ObjectContainer db){
+		List<ModeloParticipacion> participaciones=db.query(new Predicate<ModeloParticipacion>() {
+
+			@Override
+			public boolean match(ModeloParticipacion par) {
+				return par.getEvento().equals(e)&&par.getDeportista().equals(d);
+			}
+		});
+		return participaciones;
 	}
 	
 }
