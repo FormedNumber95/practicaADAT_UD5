@@ -3,10 +3,19 @@ package es.aketzagonzalez.db;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 
+/**
+ * The Class DB.
+ */
 public class DB {
 
+    /** The db. */
     private static ObjectContainer db = null;
 
+    /**
+     * consigue la conexion y si es nula la crea.
+     *
+     * @return the connection
+     */
     public static ObjectContainer getConnection() {
         if (db == null) {
             try {
@@ -20,6 +29,9 @@ public class DB {
         return db;
     }
 
+    /**
+     * Close connection.
+     */
     public static void closeConnection() {
         if (db != null) {
             db.close();
