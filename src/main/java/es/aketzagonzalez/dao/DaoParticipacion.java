@@ -59,12 +59,19 @@ public class DaoParticipacion {
 		return participaciones;
 	}
 	
-	public static List<ModeloParticipacion> conseguirPorEventoDeportista(ModeloEvento e,ModeloDeportista d,ObjectContainer db){
+	/**
+	 * Conseguir por deportista.
+	 *
+	 * @param d the d
+	 * @param db the db
+	 * @return the list
+	 */
+	public static List<ModeloParticipacion> conseguirPorDeportista(ModeloDeportista d,ObjectContainer db){
 		List<ModeloParticipacion> participaciones=db.query(new Predicate<ModeloParticipacion>() {
 
 			@Override
 			public boolean match(ModeloParticipacion par) {
-				return par.getEvento().equals(e)&&par.getDeportista().equals(d);
+				return par.getDeportista().equals(d);
 			}
 		});
 		return participaciones;
