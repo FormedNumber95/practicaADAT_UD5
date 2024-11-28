@@ -176,7 +176,19 @@ public class Main {
 	        		resp=input.nextInt();
 	        		input.nextLine();
 	        	}while(resp<1||resp>4);
-	        	//TODO hacer el update
+	        	String medalla="NA";
+	        	switch (resp) {
+				case 1:
+					medalla="Gold";
+					break;
+				case 2:
+					medalla="Silver";
+					break;
+				case 3:
+					medalla="Bronze";
+					break;
+				}
+	        	DaoParticipacion.actualizarMedallas(medalla, deportista, e, db);
 	        	break;
 	        case 3:
 	        	break;

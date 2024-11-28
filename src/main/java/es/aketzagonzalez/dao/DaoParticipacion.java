@@ -77,4 +77,10 @@ public class DaoParticipacion {
 		return participaciones;
 	}
 	
+	public static void actualizarMedallas(String medalla,ModeloDeportista dep,ModeloEvento e, ObjectContainer db) {
+		ModeloParticipacion p=conseguirPorDeportistaEvento(dep, e, db);
+		p.setMedalla(medalla);
+		db.store(p);
+	}
+	
 }
