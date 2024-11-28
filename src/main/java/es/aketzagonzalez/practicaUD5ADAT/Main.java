@@ -133,69 +133,204 @@ public class Main {
         input.nextLine();
         switch(respuesta) {
 	        case 1:
-	        	Listar(input,db);
+	        	listar(input,db);
 	        	break;
 	        case 2:
-	        	int resp=0;
-	        	List<ModeloDeportista> deportistas=null;
-	        	do {
-	        		System.out.println("Dime el nombre del deportista a buscar");
-		        	String nombre=input.nextLine();
-		        	deportistas=DaoDeportista.conseguirPorFragmentoNombre(nombre, db);
-		        	if(deportistas==null) {
-		        		System.out.println("ningun deportista coincide con el nombre insertado");
-		        		
-		        	}else {
-			        	for(int i=0;i<deportistas.size();i++) {
-			        		System.out.println((i+1)+" "+deportistas.get(i).getNombre());
-			        	}
-			        	resp=input.nextInt();
-			        	input.nextLine();
-		        	}
-	        	}while(resp<1||resp>deportistas.size());
-	        	ModeloDeportista deportista=deportistas.get(resp-1);
-	        	List<ModeloParticipacion> participaciones=DaoParticipacion.conseguirPorDeportista(deportista, db);
-	        	ArrayList<ModeloEvento>eventos=new ArrayList<ModeloEvento>();
-	        	for(ModeloParticipacion p:participaciones) {
-	        		if(!eventos.contains(p)) {
-	        			eventos.add(p.getEvento());
-	        		}
-	        	}
-	        	do {
-	        		System.out.println("Elige el evento");
-	        		for(int i=0;i<eventos.size();i++) {
-		        		System.out.println((i+1)+" "+eventos.get(i).getNombre());
-		        	}
-	        		resp=input.nextInt();
-		        	input.nextLine();
-	        	}while(resp<1||resp>eventos.size());
-	        	ModeloEvento e=eventos.get(resp-1);
-	        	do {
-	        		System.out.println("Dime que medalla quieres poner");
-	        		System.out.println("1 Gold\n2 Silver\n3 Bronze\n4 NA");
-	        		resp=input.nextInt();
-	        		input.nextLine();
-	        	}while(resp<1||resp>4);
-	        	String medalla="NA";
-	        	switch (resp) {
-				case 1:
-					medalla="Gold";
-					break;
-				case 2:
-					medalla="Silver";
-					break;
-				case 3:
-					medalla="Bronze";
-					break;
-				}
-	        	DaoParticipacion.actualizarMedallas(medalla, deportista, e, db);
+	        	modificarMdalla(db, input);
 	        	break;
 	        case 3:
+			aniadirParticipacion(db, input);
 	        	break;
 	        case 4:
+	        	eliminarParticipacion(db, input);
 	        	break;
         }
         db.close();
+	}
+
+	/**
+	 * Eliminar participacion.
+	 *
+	 * @param db the db
+	 * @param input the input
+	 */
+	private static void eliminarParticipacion(ObjectContainer db, Scanner input) {
+		int resp=0;
+		List<ModeloDeportista> deportistas=null;
+		do {
+			System.out.println("Dime el nombre del deportista a buscar");
+			String nombre=input.nextLine();
+			deportistas=DaoDeportista.conseguirPorFragmentoNombre(nombre, db);
+			if(deportistas==null) {
+				System.out.println("ningun deportista coincide con el nombre insertado");
+				
+			}else {
+		    	for(int i=0;i<deportistas.size();i++) {
+		    		System.out.println((i+1)+" "+deportistas.get(i).getNombre());
+		    	}
+		    	resp=input.nextInt();
+		    	input.nextLine();
+			}
+		}while(resp<1||resp>deportistas.size());
+		ModeloDeportista deportista=deportistas.get(resp-1);
+		List<ModeloParticipacion> participaciones=DaoParticipacion.conseguirPorDeportista(deportista, db);
+		do {
+			System.out.println("Elige la participacion:");
+			for(int i=0;i<participaciones.size();i++) {
+				System.out.println((i+1)+" "+participaciones.get(i).getEvento().getNombre());
+			}
+			resp=input.nextInt();
+	    	input.nextLine();
+		}while(resp<1||resp>participaciones.size());
+		ModeloParticipacion p=participaciones.get(resp-1);
+		DaoParticipacion.eliminar(deportista, p.getEvento(), db);
+	}
+
+	/**
+	 * Aniadir participacion.
+	 *
+	 * @param db the db
+	 * @param input the input
+	 */
+	private static void aniadirParticipacion(ObjectContainer db, Scanner input) {
+		int resp=0;
+		List<ModeloDeportista> deportistas=null;
+		boolean nuevo=false;
+		ModeloDeportista deportista=null;
+		do {
+			System.out.println("Dime el nombre del deportista a buscar");
+			String nombre=input.nextLine();
+			deportistas=DaoDeportista.conseguirPorFragmentoNombre(nombre, db);
+			if(deportistas==null) {
+				ModeloDeportista almacenarDeportista=new ModeloDeportista();
+				almacenarDeportista.setNombre(nombre);
+				DaoDeportista.insertar(almacenarDeportista, db);
+				deportista=almacenarDeportista;
+				nuevo=true;
+			}else {
+		    	for(int i=0;i<deportistas.size();i++) {
+		    		System.out.println((i+1)+" "+deportistas.get(i).getNombre());
+		    	}
+		    	resp=input.nextInt();
+		    	input.nextLine();
+			}
+		}while(((resp<1||resp>deportistas.size())&&!nuevo));
+		if(!nuevo) {
+			deportista=deportistas.get(resp-1);
+		}
+		String temporada="Summer";
+		do {
+			System.out.println("Dime la temporada:\n1 Winter\n2 Summer");
+			resp=input.nextInt();
+			input.nextLine();
+		}while(resp!=1&&resp!=2);
+		if(resp==1) {
+			temporada="Winter";
+		}
+		List<ModeloOlimpiada> olimpiadas=DaoOlimpiada.conseguirPorTemporada(temporada, db);
+		do {
+			System.out.println("Elige la edición olímpica:");
+			for(int i=0;i<olimpiadas.size();i++) {
+				System.out.println((i+1)+" "+olimpiadas.get(i).getNombre());
+			}
+			resp=input.nextInt();
+			input.nextLine();
+		}while(resp<1||resp>olimpiadas.size());
+		ModeloOlimpiada olimpiada=olimpiadas.get(resp-1);
+		List<ModeloEvento> eventos=DaoEvento.conseguirPorOlimpiada(olimpiada, db);
+		if(eventos.size()==0) {
+			System.out.println("No hay deportes en esa olimpiada");
+		}else {
+			ArrayList<ModeloDeporte> deportesDisponibles=new ArrayList<ModeloDeporte>();
+			for(ModeloEvento e:eventos) {
+				if(!deportesDisponibles.contains(e.getDeporte())) {
+					deportesDisponibles.add(e.getDeporte());
+				}
+			}
+			do {
+				System.out.println("Elige el deporte");
+				for(int i=0;i<deportesDisponibles.size();i++) {
+					System.out.println((i+1)+" "+deportesDisponibles.get(i).getNombre());
+				}
+				resp=input.nextInt();
+				input.nextLine();
+			}while(resp<1||resp>deportesDisponibles.size());
+			ModeloDeporte deporte=deportesDisponibles.get(resp-1);
+			List<ModeloEvento>eventosConFiltro=
+					DaoEvento.conseguirPorOlimpiadaDeporte(olimpiada, deporte, db);
+			do {
+				System.out.println("Elige el evento");
+				for(int i=0;i<eventosConFiltro.size();i++) {
+					System.out.println((i+1)+" "+eventosConFiltro.get(i).getNombre());
+				}
+				resp=input.nextInt();
+				input.nextLine();
+			}while(resp<1||resp>eventosConFiltro.size());
+			ModeloEvento evento=eventosConFiltro.get(resp-1);
+			DaoParticipacion.insertar(new ModeloParticipacion(deportista, evento, new ModeloEquipo("Baldur's Gate 3", "BG3"), 0, temporada), db);
+		}
+	}
+
+	/**
+	 * Modificar mdalla.
+	 *
+	 * @param db the db
+	 * @param input the input
+	 */
+	private static void modificarMdalla(ObjectContainer db, Scanner input) {
+		int resp=0;
+		List<ModeloDeportista> deportistas=null;
+		do {
+			System.out.println("Dime el nombre del deportista a buscar");
+			String nombre=input.nextLine();
+			deportistas=DaoDeportista.conseguirPorFragmentoNombre(nombre, db);
+			if(deportistas==null) {
+				System.out.println("ningun deportista coincide con el nombre insertado");
+				
+			}else {
+		    	for(int i=0;i<deportistas.size();i++) {
+		    		System.out.println((i+1)+" "+deportistas.get(i).getNombre());
+		    	}
+		    	resp=input.nextInt();
+		    	input.nextLine();
+			}
+		}while(resp<1||resp>deportistas.size());
+		ModeloDeportista deportista=deportistas.get(resp-1);
+		List<ModeloParticipacion> participaciones=DaoParticipacion.conseguirPorDeportista(deportista, db);
+		ArrayList<ModeloEvento>eventos=new ArrayList<ModeloEvento>();
+		for(ModeloParticipacion p:participaciones) {
+			if(!eventos.contains(p)) {
+				eventos.add(p.getEvento());
+			}
+		}
+		do {
+			System.out.println("Elige el evento");
+			for(int i=0;i<eventos.size();i++) {
+				System.out.println((i+1)+" "+eventos.get(i).getNombre());
+			}
+			resp=input.nextInt();
+			input.nextLine();
+		}while(resp<1||resp>eventos.size());
+		ModeloEvento e=eventos.get(resp-1);
+		do {
+			System.out.println("Dime que medalla quieres poner");
+			System.out.println("1 Gold\n2 Silver\n3 Bronze\n4 NA");
+			resp=input.nextInt();
+			input.nextLine();
+		}while(resp<1||resp>4);
+		String medalla="NA";
+		switch (resp) {
+		case 1:
+			medalla="Gold";
+			break;
+		case 2:
+			medalla="Silver";
+			break;
+		case 3:
+			medalla="Bronze";
+			break;
+		}
+		DaoParticipacion.actualizarMedallas(medalla, deportista, e, db);
 	}
 
 	/**
@@ -204,7 +339,7 @@ public class Main {
 	 * @param input the input
 	 * @param db the db
 	 */
-	private static void Listar(Scanner input, ObjectContainer db) {
+	private static void listar(Scanner input, ObjectContainer db) {
 		int resp=0;
     	String temporada="Summer";
     	do {

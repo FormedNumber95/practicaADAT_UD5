@@ -77,10 +77,30 @@ public class DaoParticipacion {
 		return participaciones;
 	}
 	
+	/**
+	 * Actualizar medallas.
+	 *
+	 * @param medalla the medalla
+	 * @param dep the dep
+	 * @param e the e
+	 * @param db the db
+	 */
 	public static void actualizarMedallas(String medalla,ModeloDeportista dep,ModeloEvento e, ObjectContainer db) {
 		ModeloParticipacion p=conseguirPorDeportistaEvento(dep, e, db);
 		p.setMedalla(medalla);
 		db.store(p);
+	}
+	
+	/**
+	 * Eliminar.
+	 *
+	 * @param dep the dep
+	 * @param e the e
+	 * @param db the db
+	 */
+	public static void eliminar(ModeloDeportista dep,ModeloEvento e, ObjectContainer db) {
+		ModeloParticipacion p=conseguirPorDeportistaEvento(dep, e, db);
+		db.delete(p);
 	}
 	
 }
